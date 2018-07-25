@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Properties>
+		<Property name="filename">${log.dir}/ilm-eop-acceptance-test.log</Property>
+		<Property name="filenamePattern">${log.dir}/ilm-eop-acceptance-test-%i.log</Property>
+		<Property name="pattern">%d{ISO8601} %-5p [%t]: %-36.36c{1} - %m%n
+		</Property>
+	</Properties>
+
+	<Appenders>
+		<!-- ======= -->
+		<!-- CONSOLE -->
+		<!-- ======= -->
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="${pattern}" />
+		</Console>
+
+		<!-- ========= -->
+		<!-- ROOT File -->
+		<!-- ========= -->
+		<RollingFile name="File" fileName="${filename}"
+			filePattern="${filenamePattern}">
+			<PatternLayout pattern="${pattern}" />
+			<Policies>
+				<SizeBasedTriggeringPolicy size="25 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="3" />
+		</RollingFile>
+
+	</Appenders>
+
+	<Loggers>
+		<!-- ilm -->
+		<Logger name="de.brueckner.eop.acceptance" level="DEBUG" />
+		<Logger name="de.brueckner.eop.managers" level="INFO" />
+		<Logger name="de.brueckner.eop.general" level="INFO" />
+		<Logger name="com.sdl.selenium.utils.config" level="ERROR"/>
+
+		<!-- ROOT -->
+		<Root level="ERROR">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="File" />
+		</Root>
+	</Loggers>
+</Configuration>

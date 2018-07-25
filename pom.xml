@@ -1,0 +1,230 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>de.test.automatedTests</groupId>
+	<artifactId>automatedTests-acceptance</artifactId>
+	<version>1.0.1-SNAPSHOT</version>
+
+	<properties>
+		<!-- PROJECT SETTINGS -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.targetJdk>1.8</project.targetJdk>
+
+		<!-- Logging -->
+		<slf4j-version>1.7.7</slf4j-version>
+		<slf4j-log4j2-version>2.0.1</slf4j-log4j2-version>
+		<log4j2-version>2.0.1</log4j2-version>
+
+		<!-- Test frameworks -->
+		<testy.version>2.6.2</testy.version>
+		<testng.version>6.9.10</testng.version>
+
+		<!-- Maven plugins -->
+		<maven-failsafe-plugin.version>2.17</maven-failsafe-plugin.version>
+		<maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
+		<maven-assembly-plugin.version>3.0.0</maven-assembly-plugin.version>
+		<maven-surefire-plugin.version>2.17</maven-surefire-plugin.version>
+		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
+
+		<!-- Spring -->
+		<spring-data-mongodb.version>1.6.0.RELEASE</spring-data-mongodb.version>
+		<spring.version>4.2.0.RELEASE</spring.version>
+
+		<!-- Joda -->
+		<joda-version>2.5</joda-version>
+
+		<log.dir>${project.build.directory}</log.dir>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>${slf4j-log4j2-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j2-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sdl.lt</groupId>
+			<artifactId>Testy</artifactId>
+			<version>${testy.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-log4j12</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>${testng.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.coobird</groupId>
+			<artifactId>thumbnailator</artifactId>
+			<version>0.4.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+			<version>${spring-data-mongodb.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.archetypes</groupId>
+			<artifactId>maven-archetype-quickstart</artifactId>
+			<version>1.1</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Joda -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>${joda-version}</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
+		</testResources>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven-compiler-plugin.version}</version>
+					<configuration>
+						<source>${project.targetJdk}</source>
+						<target>${project.targetJdk}</target>
+						<optimize>true</optimize>
+						<debug>true</debug>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>${maven-resources-plugin.version}</version>
+					<configuration>
+						<encoding>${project.build.sourceEncoding}</encoding>
+						<nonFilteredFileExtensions>
+							<nonFilteredFileExtension>exe</nonFilteredFileExtension>
+						</nonFilteredFileExtensions>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>${maven-failsafe-plugin.version}</version>
+					<configuration>
+						<includes>
+							<include>**/*AcceptanceTest.java</include>
+						</includes>
+						<systemProperties>
+							<log.dir>${log.dir}</log.dir>
+						</systemProperties>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>${maven-assembly-plugin.version}</version>
+					<configuration>
+						<descriptors>
+							<descriptor>src/test/resources/assembly/assembly.xml</descriptor>
+							<descriptor>src/test/resources/assembly/assemblyZip.xml</descriptor>
+						</descriptors>
+						<finalName>fph-automation-tests</finalName>
+						<archive>
+							<manifest>
+								<mainClass>de.general.GeneralAutomatedTestsMain</mainClass>
+							</manifest>
+						</archive>
+					</configuration>
+					<executions>
+						<execution>
+							<id>final-zip</id>
+							<phase>package</phase>
+							<goals>
+								<goal>single</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<build.profile.id>dev</build.profile.id>
+				<properties.home></properties.home>
+				<log.dir>${project.build.directory}</log.dir>
+			</properties>
+		</profile>
+		<profile>
+			<id>test</id>
+			<properties>
+				<build.profile.id>test</build.profile.id>
+				<properties.home></properties.home>
+				<log.dir>C:/Program Files (x86)/Jenkins/logs/accaptance-test</log.dir>
+			</properties>
+		</profile>
+		<profile>
+			<id>general-test</id>
+			<properties>
+				<build.profile.id>general-test</build.profile.id>
+				<properties.home></properties.home>
+				<log.dir>logs</log.dir>
+			</properties>
+		</profile>
+	</profiles>
+</project>

@@ -1,0 +1,18 @@
+target
+classes
+bin
+*.log
+
+# Eclipse
+.classpath
+.project
+.settings
+.metadata
+
+# IntelliJ IDEA
+*.iml
+*.ipr
+*.iws
+.idea
+
+test-output/*
