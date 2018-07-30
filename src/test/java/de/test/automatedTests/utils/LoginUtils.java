@@ -42,7 +42,8 @@ public class LoginUtils {
         //click login button
         WebElement loginButton = driver.findElement(By.cssSelector("#btnLogin"));
         loginButton.click();
-        new WebDriverWait(driver, ApplicationManager.WAIT_TIME_OUT_IN_20_SECONDS).until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#Header_lblUser")));
+        //wait loading page
+        new WebDriverWait(driver, ApplicationManager.WAIT_TIME_OUT_IN_20_SECONDS).until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#nav-hamburger")));
 
     }
 }
