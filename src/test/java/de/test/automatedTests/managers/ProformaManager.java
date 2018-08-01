@@ -1,22 +1,32 @@
 package de.test.automatedTests.managers;
 
+import de.test.automatedTests.config.AbstractAcceptanceTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
-public class ProformaManager {
-    WebDriver driver;
+public class ProformaManager extends AbstractAcceptanceTest {
+
+    private WebDriver driver;
 
     public ProformaManager(WebDriver driver) {
-
         this.driver = driver;
     }
 
+    public static DecimalFormat decimalFormatExtended = new DecimalFormat("#.###");
+
+    public static DecimalFormat decimalFormatShort = new DecimalFormat("#.##");
+
     public static String ARROW_SELECTOR = ".rgRow .rgExpandCol";
     public static String DETAIL_TABLE_FOOTER = ".rgDetailTable.rgClipCells .rgFooter td";
-    public static String HEADERS_LIST_SELECTOR=".rgRow";
+    public static String HEADERS_LIST_SELECTOR = ".rgRow";
+
+
     public class OrderData {
         public float fixed;
         public int count;
@@ -78,17 +88,19 @@ public class ProformaManager {
      * it will be used to save data collected from a row of table
      */
 
-    public List<WebElement> getDetailTabel(){
+    public List<WebElement> getDetailTabel() {
+
+
         //second table contain the rows that we need
-        List<WebElement> tableList = driver.findElements(By.cssSelector("table"));
+        List<WebElement> tableList = getWebDriver().findElements(By.cssSelector("table"));
 
         //all the row with good date for us have class .rgRow
         List<WebElement> rows = tableList.get(1).findElements(By.cssSelector(".rgRow"));
 
-       return rows;
+        return rows;
     }
 
-    public OrderData saveDataFromRow(int index,List<WebElement> rows) {
+    public OrderData saveDataFromRow(int index, List<WebElement> rows) {
         float fixed;
         int count;
         float linearMeters;
@@ -117,10 +129,10 @@ public class ProformaManager {
         thickness = Float.parseFloat(rowData.get(7).getText());
         fixed = Float.parseFloat(rowData.get(10).getText());
         count = Integer.parseInt(rowData.get(11).getText());
-        linearMeters = Float.parseFloat(rowData.get(12).getText());
+        linearMeters = Float.parseFloat(rowData.get(12).getText().replaceAll("[^\\d.]", ""));
         packets = Integer.parseInt(rowData.get(13).getText());
         m3packets = Float.parseFloat(rowData.get(14).getText());
-        m2packets = Float.parseFloat(rowData.get(15).getText());
+        m2packets = Float.parseFloat(rowData.get(15).getText().replaceAll("[^\\d.]", ""));
         totalM3 = Float.parseFloat(rowData.get(16).getText());
         //remove the $ from price strings
         priceM3 = Float.parseFloat(rowData.get(17).getText().replaceAll("[^\\d.]", ""));
@@ -158,30 +170,41 @@ public class ProformaManager {
         public float totalM3Final;
         public float totalMoney;
 
-        OrderFinalData( int totalCount, float totalLinearMeters, float totalM3Final, float totalPackets,
-        float totalMoney){
-        this.totalCount=totalCount;
-        this.totalLinearMeters=totalLinearMeters;
-        this.totalM3Final=totalM3Final;
-        this.totalPackets=totalPackets;
-        this.totalMoney=totalMoney;
-    }
+        OrderFinalData(int totalCount, float totalLinearMeters, float totalM3Final, float totalPackets,
+                       float totalMoney) {
+            this.totalCount = totalCount;
+            this.totalLinearMeters = totalLinearMeters;
+            this.totalM3Final = totalM3Final;
+            this.totalPackets = totalPackets;
+            this.totalMoney = totalMoney;
+        }
 
     }
 
-    public OrderFinalData saveDataFromTableFooter(){
-       List<WebElement> totalDetail=driver.findElements(By.cssSelector(DETAIL_TABLE_FOOTER));
-       int count;
-       float liniarMeters;
-       float packets;
-       float totalM3;
-       float totalMoney;
-       count=Integer.parseInt(totalDetail.get(11).getText());
-       liniarMeters=Float.parseFloat(totalDetail.get(12).getText().replaceAll("[^\\d.]", ""));
-       packets=Float.parseFloat(totalDetail.get(13).getText().replaceAll("[^\\d.]", ""));
-       totalM3=Float.parseFloat(totalDetail.get(16).getText().replaceAll("[^\\d.]", ""));
-       totalMoney= Float.parseFloat(totalDetail.get(19).getText().replaceAll("[^\\d.]", ""));
-       return new OrderFinalData(count,liniarMeters,totalM3,packets,totalMoney);
+    public OrderFinalData saveDataFromTableFooter() {
+        List<WebElement> totalDetail = getWebDriver().findElements(By.cssSelector(DETAIL_TABLE_FOOTER));
+        int count;
+        float liniarMeters;
+        float packets;
+        float totalM3;
+        float totalMoney;
+        count = Integer.parseInt(totalDetail.get(11).getText());
+        liniarMeters = Float.parseFloat(totalDetail.get(12).getText().replaceAll("[^\\d.]", ""));
+        packets = Float.parseFloat(totalDetail.get(13).getText().replaceAll("[^\\d.]", ""));
+        totalM3 = Float.parseFloat(totalDetail.get(16).getText().replaceAll("[^\\d.]", ""));
+        totalMoney = Float.parseFloat(totalDetail.get(19).getText().replaceAll("[^\\d.]", ""));
+        return new OrderFinalData(count, liniarMeters, totalM3, packets, totalMoney);
+    }
+
+    public void selectNumberOfElementsOnPage() {
+        List<WebElement> pageButtons=driver.findElements(By.cssSelector(".rgWrap.rgNumPart a"));
+        WebElement selectNumberOnPage = getWebDriver().findElement(By.cssSelector(".rcbInner.rcbReadOnly"));
+        selectNumberOnPage.click();
+        new WebDriverWait(getWebDriver(), ApplicationManager.WAIT_TIME_OUT_IN_20_SECONDS).until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".rcbList li:nth-child(5)")));
+        WebElement optionsNumberElementsOnPAge = getWebDriver().findElement(By.cssSelector(".rcbList li:nth-child(5)"));
+        optionsNumberElementsOnPAge.click();
+        new WebDriverWait(getWebDriver(), ApplicationManager.WAIT_TIME_OUT_IN_20_SECONDS).until(ExpectedConditions.invisibilityOf(pageButtons.get(1)));
+
     }
 
 }

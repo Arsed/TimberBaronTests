@@ -11,7 +11,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static de.test.automatedTests.managers.loginDates.*;
-import static de.test.automatedTests.utils.LoginUtils.loginOnPageWithWrongData;
 
 public class LoginAcceptanceTest extends AbstractAcceptanceTest {
 
@@ -30,7 +29,7 @@ public class LoginAcceptanceTest extends AbstractAcceptanceTest {
     @Test(dataProvider = "testDates")
     public void loginTest(String user, String password) {
         //try login to the page
-        loginOnPageWithWrongData(user, password, getWebDriver());
+        ApplicationManager.loginOnPageWithWrongData(user, password, getWebDriver());
 
         //wait for the page to load
         WebElement alertMessage = new WebDriverWait(getWebDriver(), ApplicationManager.WAIT_TIME_OUT_IN_20_SECONDS).until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#lblResult")));

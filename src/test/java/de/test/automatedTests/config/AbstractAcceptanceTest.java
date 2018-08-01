@@ -2,9 +2,6 @@ package de.test.automatedTests.config;
 
 import com.sdl.selenium.utils.config.WebDriverConfig;
 import de.test.automatedTests.managers.ApplicationManager;
-import de.test.automatedTests.managers.HomePageMananger;
-import de.test.automatedTests.managers.ProformaManager;
-import de.test.automatedTests.managers.ToolsManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -36,10 +33,7 @@ public class AbstractAcceptanceTest extends AbstractTestNGSpringContextTests {
     private static final Logger logger = LoggerFactory.getLogger(AbstractAcceptanceTest.class);
     private static WebDriver driver;
 
-    protected ApplicationManager applicationManager;
-    protected ToolsManager toolsManager;
-    protected HomePageMananger homePageMananger;
-    protected ProformaManager proformaManager;
+    public ApplicationManager applicationManager;
 
     @Value("${chrome.driver.location}")
     private String chromeDriverLocation;
@@ -57,16 +51,16 @@ public class AbstractAcceptanceTest extends AbstractTestNGSpringContextTests {
 
     @BeforeMethod
     public void openApplication() {
+
+        applicationManager = new ApplicationManager(getWebDriver());
+
+
         logger.info("------------------------ Test start ------------------------");
         createWebDriver();
 
         //init testy
         WebDriverConfig.init(driver);
 
-        applicationManager = new ApplicationManager(driver);
-        toolsManager = new ToolsManager(driver);
-        homePageMananger=new HomePageMananger(driver);
-        proformaManager=new ProformaManager(driver);
         logger.info("Opening application " + applicationURL);
         driver.get(applicationURL);
 

@@ -1,75 +1,111 @@
 package de.test.automatedTests.actionsMenuTests;
 
-import de.test.automatedTests.config.AbstractAcceptanceTest;
 import de.test.automatedTests.managers.ApplicationManager;
 import de.test.automatedTests.managers.ProformaManager;
+import de.test.automatedTests.utils.UtilsTools;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.List;
 
 import static de.test.automatedTests.managers.ProformaManager.ARROW_SELECTOR;
 import static de.test.automatedTests.managers.ProformaManager.HEADERS_LIST_SELECTOR;
-import static de.test.automatedTests.utils.LoginUtils.loginOnPage;
 
-public class ProformaAcceptanceTests extends AbstractAcceptanceTest {
-
+public class ProformaAcceptanceTests extends AbstractProformaTest {
 
     @Test
-    public void blabla() {
+    public void proformaAcceptanceTests() {
+
+        SoftAssert softAssert = new SoftAssert();
+
         //login on the page
-        loginOnPage("admin", "654321", getWebDriver());
+        ApplicationManager.loginOnPage("admin", "654321", getWebDriver());
+        //enter on the page that we need
         homePageMananger.goToPraformaPage("Actions", "Proforma Invoices");
+        List<WebElement> pageArrows;
+        List<WebElement> headerRow;
 
-        List<WebElement> pageArrows = getWebDriver().findElements(By.cssSelector(ARROW_SELECTOR));
-        pageArrows.get(0).click();
+        proformaManager.selectNumberOfElementsOnPage();
+        UtilsTools.scrollWitJavaScrip(0, -5000, getWebDriver());
 
-        new WebDriverWait(getWebDriver(), ApplicationManager.WAIT_TIME_OUT_IN_20_SECONDS).until(ExpectedConditions.elementToBeClickable(By.cssSelector(".t-font-icon.rgIcon.rgCollapseIcon")));
-        List<WebElement> rowsDetails = proformaManager.getDetailTabel();
+        List<WebElement> headersList = getWebDriver().findElements(By.cssSelector(HEADERS_LIST_SELECTOR));
 
-        for (int i = 0; i < rowsDetails.size(); i++) {
-            if (i != 2) {
+        for (int j = 0; j < headersList.size(); j++) {
+
+            pageArrows = getWebDriver().findElements(By.cssSelector(ARROW_SELECTOR));
+
+            headersList = getWebDriver().findElements(By.cssSelector(HEADERS_LIST_SELECTOR));
+            headerRow = headersList.get(j).findElements(By.cssSelector("td"));
+
+            System.out.println("**************************" + headerRow.get(1).getText());
+            String noHeader = headerRow.get(1).getText();
+            String typeOf = headerRow.get(8).getText();
+
+            pageArrows.get(j).click();
+            new WebDriverWait(getWebDriver(), ApplicationManager.WAIT_TIME_OUT_IN_20_SECONDS).until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".t-font-icon.rgIcon.rgCollapseIcon")));
+
+            List<WebElement> rowsDetails = proformaManager.getDetailTabel();
+
+            for (int i = 0; i < rowsDetails.size(); i++) {
+                System.out.println(i);
                 ProformaManager.OrderData rowData = proformaManager.saveDataFromRow(i, rowsDetails);
 
-                Assert.assertTrue(verifyLinealMeters(rowData), "the lineal meters have a bad value for " + rowData.fixed + "*" + rowData.count + "!=" + rowData.linearMeters);
-                Assert.assertTrue(verifyPackageVolume(rowData), "the m3/packets have a bad value for " + rowData.width + "*" + rowData.thickness + "*" + rowData.fixed + "*" + rowData.count + "=" + rowData.m3packets);
-                Assert.assertTrue(verifyPackageArea(rowData), "the area " + rowData.linearMeters * rowData.width / 1000 + " need to be " + rowData.m2packets);
-                Assert.assertTrue(verifyTotalM3(rowData), "the total volume " + rowData.m3packets * rowData.packets + " need to be " + rowData.totalM3);
-                Assert.assertTrue(verifyTotalPriceFromM3(rowData), "the total price calculate from volume price " + rowData.totalM3 * rowData.priceM3 + " but it is " + rowData.total);
-                Assert.assertTrue(verifyTotalPriceFromPricePacket(rowData), "the total price calculate from package price " + rowData.packets * rowData.pricePacket + " but it is " + rowData.total);
+                softAssert.assertTrue(verifyLinealMeters(rowData), "For no " + noHeader + " in table at index = " + i + " lineal meters have a bad value eg:" + rowData.fixed * rowData.count + "!=" + rowData.linearMeters);
+
+                softAssert.assertTrue(verifyPackageVolume(rowData), "For no " + noHeader + " in table at index = " + i + " m3/packets have a bad value eg :" + rowData.width * rowData.thickness * rowData.fixed * rowData.count / 1000000 + "!=" + rowData.m3packets);
+                softAssert.assertTrue(verifyPackageArea(rowData), "For no " + noHeader + " in table at index = " + i + " area " + rowData.linearMeters * rowData.width / 1000 + "!=" + rowData.m2packets);
+                softAssert.assertTrue(verifyTotalM3(rowData), "For no " + noHeader + " in table at index = " + i + " total volume: " + rowData.m3packets * rowData.packets + "!= " + rowData.totalM3);
+                if (!typeOf.equals("pieces"))
+                    softAssert.assertTrue(verifyTotalPriceFromM3(rowData), "For no " + noHeader + " in table at index = " + i + " price calculate from volume price :" + rowData.width * rowData.thickness * rowData.fixed * rowData.count * rowData.packets * rowData.priceM3 / 1000000 + " != " + rowData.total);
+                else
+                    softAssert.assertTrue(verifyTotalPriceFromPiecesPrice(rowData), "For no " + noHeader + " in table at index = " + i + " price calculate from pieces price :" + rowData.fixed * rowData.priceM3 + rowData.count + " != " + rowData.total);
+
+                softAssert.assertTrue(verifyTotalPriceFromPricePacket(rowData), "For no " + noHeader + " in table at index = " + i + " the total price calculate from package price: " + rowData.width * rowData.thickness * rowData.fixed * rowData.count * rowData.packets * rowData.priceM3 / 1000000 + "!=" + rowData.total);
             }
+
+            ProformaManager.OrderFinalData orderFinalData = proformaManager.saveDataFromTableFooter();
+            softAssert.assertTrue(verifyTotalCount(orderFinalData, rowsDetails), "For no " + noHeader + " Total number from footer is wrong " + orderFinalData.totalCount);
+            softAssert.assertTrue(verifyTotalLinearMeters(orderFinalData, rowsDetails), "For no " + noHeader + " Total lineal meters is bad " + orderFinalData.totalLinearMeters);
+            softAssert.assertTrue(verifyTotalPackets(orderFinalData, rowsDetails), "For no " + noHeader + " Total packets from footer is wrong" + orderFinalData.totalPackets);
+            softAssert.assertTrue(verifyTotalM3Footer(orderFinalData, rowsDetails), "For no " + noHeader + " Total volume from footer is wrong " + orderFinalData.totalM3Final);
+            softAssert.assertTrue(verifyTotalPrice(orderFinalData, rowsDetails), "For no " + noHeader + " Total prise from footer is wrong " + orderFinalData.totalMoney);
+
+            pageArrows = getWebDriver().findElements(By.cssSelector(ARROW_SELECTOR));
+            pageArrows.get(j).click();
+            new WebDriverWait(getWebDriver(), ApplicationManager.WAIT_TIME_OUT_IN_20_SECONDS).until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".t-font-icon.rgIcon.rgCollapseIcon")));
+
+            headersList = getWebDriver().findElements(By.cssSelector(HEADERS_LIST_SELECTOR));
+            headerRow = headersList.get(j).findElements(By.cssSelector("td"));
+            softAssert.assertTrue(verifyHeaderValue(headerRow.get(5), orderFinalData.totalMoney), "For no " + noHeader + " total money 1 is wrong " + orderFinalData.totalMoney);
+            softAssert.assertTrue(verifyHeaderValue(headerRow.get(6), orderFinalData.totalMoney), "For no " + noHeader + " total money 2 is wrong " + orderFinalData.totalMoney);
+            softAssert.assertTrue(verifyPAcketsCountFromHeader(headerRow.get(9), orderFinalData.totalPackets), "For no " + noHeader + " total packets is wrong " + headerRow.get(9).getText() + " != " + orderFinalData.totalPackets);
+            UtilsTools.scrollWitJavaScrip(0, 45, getWebDriver());
         }
-
-        ProformaManager.OrderFinalData orderFinalData = proformaManager.saveDataFromTableFooter();
-        Assert.assertTrue(verifyTotalCount(orderFinalData, rowsDetails),"the total number from footer is wrong "+orderFinalData.totalCount);
-        Assert.assertTrue(verifyTotalLinearMeters(orderFinalData, rowsDetails),"the total lineal meters is bad "+orderFinalData.totalLinearMeters);
-        Assert.assertTrue(verifyTotalPackets(orderFinalData, rowsDetails),"the total packets from footer is wrong"+orderFinalData.totalPackets);
-        Assert.assertTrue(verifyTotalM3Footer(orderFinalData, rowsDetails),"the total vloume from footer is wrong "+orderFinalData.totalM3Final);
-        Assert.assertTrue(verifyTotalPrice(orderFinalData, rowsDetails),"the total prise from footer is wrong "+orderFinalData.totalMoney);
-
-        pageArrows.get(0).click();
-        List<WebElement> headerList=getWebDriver().findElements(By.cssSelector(HEADERS_LIST_SELECTOR));
-        List<WebElement> headerRow=headerList.get(0).findElements(By.cssSelector("td"));
-
+        softAssert.assertAll();
     }
+
 
     //verify linear meters that is calculate like a multiplication between fixed and count
     public boolean verifyLinealMeters(ProformaManager.OrderData rowData) {
-
-        return rowData.fixed * rowData.count == rowData.linearMeters;
+        Float aux = rowData.fixed * rowData.count;
+        aux = Float.parseFloat(proformaManager.decimalFormatExtended.format(aux));
+        return aux == rowData.linearMeters;
     }
 
     //verify the volume with formula width*thickness*count*fixed and divided with 1000000 to obtain cube feet
     public boolean verifyPackageVolume(ProformaManager.OrderData rowData) {
 
         float aux = rowData.width * rowData.thickness * rowData.count / 1000000 * rowData.fixed;
-        aux = BigDecimal.valueOf(aux).setScale(3, BigDecimal.ROUND_HALF_UP).floatValue();
+
+        aux = Float.parseFloat(proformaManager.decimalFormatExtended.format(aux));
+        rowData.m3packets = Float.parseFloat(proformaManager.decimalFormatExtended.format(rowData.m3packets));
+        System.out.println(aux);
+        System.out.println(rowData.m3packets);
         return aux == rowData.m3packets;
     }
 
@@ -78,6 +114,7 @@ public class ProformaAcceptanceTests extends AbstractAcceptanceTest {
 
         float aux = rowData.linearMeters * rowData.width / 1000;
         aux = BigDecimal.valueOf(aux).setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
+        aux = Float.parseFloat(proformaManager.decimalFormatShort.format(aux));
         return aux == rowData.m2packets;
 
     }
@@ -94,8 +131,14 @@ public class ProformaAcceptanceTests extends AbstractAcceptanceTest {
     public boolean verifyTotalPriceFromM3(ProformaManager.OrderData rowData) {
 
         float aux = rowData.width * rowData.thickness * rowData.fixed * rowData.count * rowData.packets * rowData.priceM3 / 1000000;
-        DecimalFormat df = new DecimalFormat("#.##");
-        aux = Float.parseFloat(df.format(aux));
+        aux = Float.parseFloat(proformaManager.decimalFormatShort.format(aux));
+        return aux == rowData.total;
+    }
+
+    public boolean verifyTotalPriceFromPiecesPrice(ProformaManager.OrderData rowData) {
+
+        float aux = rowData.priceM3 * rowData.count * rowData.packets;
+        aux = Float.parseFloat(proformaManager.decimalFormatShort.format(aux));
         return aux == rowData.total;
     }
 
@@ -144,9 +187,7 @@ public class ProformaAcceptanceTests extends AbstractAcceptanceTest {
 
         for (int i = 0; i < rowsDetails.size(); i++)
             totalCount += proformaManager.saveDataFromRow(i, rowsDetails).totalM3;
-
-        DecimalFormat df = new DecimalFormat("#.###");
-        totalCount = Float.parseFloat(df.format(totalCount));
+        totalCount = Float.parseFloat(proformaManager.decimalFormatExtended.format(totalCount));
 
         return totalCount == orderFinalData.totalM3Final;
     }
@@ -157,7 +198,21 @@ public class ProformaAcceptanceTests extends AbstractAcceptanceTest {
 
         for (int i = 0; i < rowsDetails.size(); i++)
             totalCount += proformaManager.saveDataFromRow(i, rowsDetails).total;
-
+        totalCount = Float.parseFloat(proformaManager.decimalFormatShort.format(totalCount));
         return totalCount == orderFinalData.totalMoney;
     }
+
+    private boolean verifyHeaderValue(WebElement headerValue, float totalMoney) {
+        Float total = Float.parseFloat(headerValue.getText().replaceAll("[^\\d.]", ""));
+        total = Float.parseFloat(proformaManager.decimalFormatShort.format(total));
+        totalMoney = Float.parseFloat(proformaManager.decimalFormatShort.format(totalMoney));
+
+        return total == totalMoney;
+    }
+
+    private boolean verifyPAcketsCountFromHeader(WebElement headerCount, float countTotal) {
+        Integer count = Integer.parseInt(headerCount.getText());
+        return count == countTotal;
+    }
+
 }
