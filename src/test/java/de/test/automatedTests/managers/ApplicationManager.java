@@ -1,7 +1,6 @@
 package de.test.automatedTests.managers;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -14,8 +13,8 @@ public class ApplicationManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationManager.class);
 
-    public static final int WAIT_TIME_OUT_IN_10_SECONDS = 10;
-    public static final int WAIT_TIME_OUT_IN_20_SECONDS = 20;
+
+    public static final int WAIT_TIME_OUT_IN_35_SECONDS = 35;
     private WebDriver driver;
 
     public ApplicationManager(WebDriver driver) {
@@ -56,7 +55,7 @@ public class ApplicationManager {
         WebElement loginButton = driver.findElement(By.cssSelector("#btnLogin"));
         loginButton.click();
         //wait loading page
-        new WebDriverWait(driver, ApplicationManager.WAIT_TIME_OUT_IN_20_SECONDS).until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#nav-hamburger")));
+        new WebDriverWait(driver, ApplicationManager.WAIT_TIME_OUT_IN_35_SECONDS).until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#nav-hamburger")));
 
     }
 

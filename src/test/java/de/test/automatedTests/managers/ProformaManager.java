@@ -25,7 +25,7 @@ public class ProformaManager extends AbstractAcceptanceTest {
     public static String ARROW_SELECTOR = ".rgRow .rgExpandCol";
     public static String DETAIL_TABLE_FOOTER = ".rgDetailTable.rgClipCells .rgFooter td";
     public static String HEADERS_LIST_SELECTOR = ".rgRow";
-
+    public static String PAGE_TITLE = ".page-title";
 
     public class OrderData {
         public float fixed;
@@ -197,14 +197,95 @@ public class ProformaManager extends AbstractAcceptanceTest {
     }
 
     public void selectNumberOfElementsOnPage() {
-        List<WebElement> pageButtons=driver.findElements(By.cssSelector(".rgWrap.rgNumPart a"));
+        List<WebElement> pageButtons = driver.findElements(By.cssSelector(".rgWrap.rgNumPart a"));
         WebElement selectNumberOnPage = getWebDriver().findElement(By.cssSelector(".rcbInner.rcbReadOnly"));
         selectNumberOnPage.click();
-        new WebDriverWait(getWebDriver(), ApplicationManager.WAIT_TIME_OUT_IN_20_SECONDS).until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".rcbList li:nth-child(5)")));
+        new WebDriverWait(getWebDriver(), ApplicationManager.WAIT_TIME_OUT_IN_35_SECONDS).until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".rcbList li:nth-child(5)")));
         WebElement optionsNumberElementsOnPAge = getWebDriver().findElement(By.cssSelector(".rcbList li:nth-child(5)"));
         optionsNumberElementsOnPAge.click();
-        new WebDriverWait(getWebDriver(), ApplicationManager.WAIT_TIME_OUT_IN_20_SECONDS).until(ExpectedConditions.invisibilityOf(pageButtons.get(1)));
+        new WebDriverWait(getWebDriver(), ApplicationManager.WAIT_TIME_OUT_IN_35_SECONDS).until(ExpectedConditions.invisibilityOf(pageButtons.get(1)));
 
+    }
+
+    public class ColumnsOfTabel
+
+    {
+        public String invoice;
+        public String dateCreated;
+        public String customer;
+        public String currency;
+        public String valueExGST;
+        public String valueInGST;
+        public String isGST;
+        public String unit;
+        public String vessel;
+        public String voyageNo;
+        public String dischargeDate;
+        public String note;
+        public WebElement printButton;
+
+
+        ColumnsOfTabel(String invoice,
+                       String dateCreated,
+                       String customer,
+                       String currency,
+                       String valueExGST,
+                       String valueInGST,
+                       String isGST,
+                       String unit,
+                       String vessel,
+                       String voyageNo,
+                       String dischargeDate,
+                       String note,
+                       WebElement printButton) {
+            this.invoice = invoice;
+            this.dateCreated = dateCreated;
+            this.customer = customer;
+            this.currency = currency;
+            this.valueExGST = valueExGST;
+            this.valueInGST = valueInGST;
+            this.isGST = isGST;
+            this.unit = unit;
+            this.vessel = vessel;
+            this.voyageNo = voyageNo;
+            this.dischargeDate = dischargeDate;
+            this.note = note;
+            this.printButton=printButton;
+        }
+
+    }
+
+    public ColumnsOfTabel saveDataFromMainTabelRow(int index, List<WebElement> headersList) {
+        String invoice;
+        String dateCreated;
+        String customer;
+        String currency;
+        String valueExGST;
+        String valueInGST;
+        String isGST;
+        String unit;
+        String vessel;
+        String voyageNo;
+        String dischargeDate;
+        String note;
+        WebElement printButton;
+       List<WebElement> rowData = headersList.get(index).findElements(By.cssSelector("td"));
+       invoice=rowData.get(1).getText();
+       dateCreated=rowData.get(2).getText();
+       customer=rowData.get(3).getText();
+       currency=rowData.get(4).getText();
+       valueExGST=rowData.get(5).getText();
+       valueInGST=rowData.get(6).getText();
+       isGST=rowData.get(7).getText();
+       unit=rowData.get(8).getText();
+       vessel=rowData.get(10).getText();
+       voyageNo=rowData.get(11).getText();
+        dischargeDate=rowData.get(12).getText();
+       note=rowData.get(12).getText();
+       printButton=rowData.get(15);
+
+       return new ColumnsOfTabel(invoice,dateCreated,customer,currency,valueExGST,valueInGST,isGST,unit,vessel
+       ,voyageNo,dischargeDate,note,printButton);
     }
 
 }

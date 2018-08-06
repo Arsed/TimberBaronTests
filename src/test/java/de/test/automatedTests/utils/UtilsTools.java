@@ -9,9 +9,10 @@ public class UtilsTools {
         js.executeScript("window.scrollBy("+x+","+y+")");
     }
 
-    public static float converFloat(float number,int decimalPart) {
 
-        int zero=10^decimalPart;
-        return (float) (Math.floor(number *zero) /zero);
+    public static void switchToLastHandle(WebDriver driver) {
+        for (String windowName : driver.getWindowHandles()) {
+            driver.switchTo().window(windowName);
+        }
     }
 }

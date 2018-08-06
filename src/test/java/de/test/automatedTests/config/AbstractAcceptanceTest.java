@@ -64,7 +64,7 @@ public class AbstractAcceptanceTest extends AbstractTestNGSpringContextTests {
         logger.info("Opening application " + applicationURL);
         driver.get(applicationURL);
 
-        new WebDriverWait(driver, ApplicationManager.WAIT_TIME_OUT_IN_20_SECONDS).until(ExpectedConditions.elementToBeClickable(By.cssSelector("#txtUsername")));
+        new WebDriverWait(driver, ApplicationManager.WAIT_TIME_OUT_IN_35_SECONDS).until(ExpectedConditions.elementToBeClickable(By.cssSelector("#txtUsername")));
     }
 
     @AfterMethod

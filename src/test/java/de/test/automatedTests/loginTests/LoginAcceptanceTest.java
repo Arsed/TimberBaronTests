@@ -32,7 +32,7 @@ public class LoginAcceptanceTest extends AbstractAcceptanceTest {
         ApplicationManager.loginOnPageWithWrongData(user, password, getWebDriver());
 
         //wait for the page to load
-        WebElement alertMessage = new WebDriverWait(getWebDriver(), ApplicationManager.WAIT_TIME_OUT_IN_20_SECONDS).until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#lblResult")));
+        WebElement alertMessage = new WebDriverWait(getWebDriver(), ApplicationManager.WAIT_TIME_OUT_IN_35_SECONDS).until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#lblResult")));
 
         //verify fail login
         Assert.assertEquals(alertMessage.getText(), "Your username or password is incorrect. Please try again.");
